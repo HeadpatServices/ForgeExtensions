@@ -1,0 +1,70 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+    }
+}
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'java'
+}
+apply plugin: 'net.minecraftforge.gradle'
+
+group = 'services.headpat'
+version = '1.0-SNAPSHOT'
+archivesBaseName = 'forgeextensions'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+compileJava.options.encoding = 'UTF-8'
+
+minecraft {
+    mappings channel: 'stable', version: '39-1.12'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://libraries.minecraft.net"
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
+
+    shadow 'com.mojang:brigadier:1.0.17'
+
+    compileOnly 'org.projectlombok:lombok:1.18.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.16'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
+}
+
+task relocateShadowJar(type: ConfigureShadowRelocation) {
+    target = tasks.shadowJar
+    prefix = "services.headpat.forgeextensions.libs"
+}
+
+shadowJar {
+    baseName = archivesBaseName
+    classifier = null
+    version = version + "-shadow"
+    configurations = [project.configurations.shadow]
+}
+
+tasks.shadowJar.dependsOn tasks.relocateShadowJar
+
+jar.finalizedBy('reobfJar')
+
+reobf {
+    shadowJar {}
+}
