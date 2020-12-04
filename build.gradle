@@ -57,7 +57,7 @@ task relocateShadowJar(type: ConfigureShadowRelocation) {
 shadowJar {
     baseName = archivesBaseName
     classifier = null
-    version = version + "-shadow"
+    version = version
     configurations = [project.configurations.shadow]
 }
 
