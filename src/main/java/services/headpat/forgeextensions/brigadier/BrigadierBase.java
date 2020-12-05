@@ -18,25 +18,30 @@ import services.headpat.forgeextensions.ColorCode;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class BrigadierBase extends CommandBase {
 	@Getter
 	private final String name;
-	private final Function<ICommandSender, String> usageConsumer;
 	protected final CommandDispatcher<ICommandSender> commandDispatcher;
 
-	public BrigadierBase(String name, Function<ICommandSender, String> usageConsumer, Consumer<CommandDispatcher<ICommandSender>> dispatcherConsumer) {
+	/**
+	 * @param name               Name of command.
+	 * @param dispatcherConsumer The consumer to register commands with.
+	 */
+	public BrigadierBase(String name, Consumer<CommandDispatcher<ICommandSender>> dispatcherConsumer) {
 		this.name = name;
-		this.usageConsumer = usageConsumer;
 		this.commandDispatcher = new CommandDispatcher<>();
 		dispatcherConsumer.accept(commandDispatcher);
 	}
 
 	@Override
 	public final @NotNull String getUsage(@NotNull ICommandSender sender) {
-		return usageConsumer.apply(sender);
+		StringBuilder builder = new StringBuilder();
+		builder.append(ColorCode.RED.getColorCodeString()).append("Usages:").append("\n");
+		for (String s : commandDispatcher.getAllUsage(commandDispatcher.getRoot(), sender, true))
+			builder.append(ColorCode.RED.getColorCodeString()).append("/").append(s).append("\n");
+		return builder.toString();
 	}
 
 	@Override
@@ -44,13 +49,13 @@ public class BrigadierBase extends CommandBase {
 		try {
 			int result = this.commandDispatcher.execute(getCommandString(args), sender);
 			if (result <= 0) {
-				sendUsageMessage(sender, this.commandDispatcher);
+				sender.sendMessage(new TextComponentString(getUsage(sender)));
 			}
 		} catch (CommandSyntaxException e) {
 			if (e.getMessage() != null)
 				sender.sendMessage(new TextComponentString(ColorCode.RED.getColorCodeString() + e.getMessage()));
 
-			sendUsageMessage(sender, this.commandDispatcher);
+			sender.sendMessage(new TextComponentString(getUsage(sender)));
 		}
 	}
 
@@ -65,12 +70,6 @@ public class BrigadierBase extends CommandBase {
 	@Override
 	public final @NotNull List<String> getAliases() {
 		return Collections.emptyList();
-	}
-
-	private static void sendUsageMessage(@NotNull ICommandSender sender, @NotNull CommandDispatcher<ICommandSender> commandDispatcher) {
-		sender.sendMessage(new TextComponentString(ColorCode.RED.getColorCodeString() + "Usages:"));
-		for (String s : commandDispatcher.getAllUsage(commandDispatcher.getRoot(), sender, true))
-			sender.sendMessage(new TextComponentString(ColorCode.RED.getColorCodeString() + "/" + s));
 	}
 
 	public final String getCommandString(String[] args) {
