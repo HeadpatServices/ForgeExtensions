@@ -27,7 +27,7 @@ public class PlayerUtils {
 	/**
 	 * Gets nearby players only, removing the time to find regular entities. Server side only!
 	 *
-	 * @param world         world of location.
+	 * @param world         World of location.
 	 * @param location      Location of where to search.
 	 * @param radius        Radius to search for players.
 	 * @param sortByClosest Whether to sort Set by proximity.
@@ -38,7 +38,6 @@ public class PlayerUtils {
 			return null;
 
 		Stream<? extends EntityPlayerMP> stream = PlayerUtils.getPlayerList().getPlayers().stream().filter((player) -> {
-
 			if (!player.world.equals(world)) {
 				return (false);
 			}

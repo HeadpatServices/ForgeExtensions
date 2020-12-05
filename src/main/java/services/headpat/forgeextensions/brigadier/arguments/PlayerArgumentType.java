@@ -17,6 +17,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class PlayerArgumentType implements ArgumentType<EntityPlayerMP> {
+	private PlayerArgumentType() {
+	}
+
 	/**
 	 * Shortcut to create a new {@link PlayerArgumentType} instance.
 	 *

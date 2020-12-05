@@ -25,7 +25,7 @@ public class BrigadierBase extends CommandBase {
 	@Getter
 	private final String name;
 	private final Function<ICommandSender, String> usageConsumer;
-	protected CommandDispatcher<ICommandSender> commandDispatcher;
+	protected final CommandDispatcher<ICommandSender> commandDispatcher;
 
 	public BrigadierBase(String name, Function<ICommandSender, String> usageConsumer, Consumer<CommandDispatcher<ICommandSender>> dispatcherConsumer) {
 		this.name = name;
@@ -35,12 +35,12 @@ public class BrigadierBase extends CommandBase {
 	}
 
 	@Override
-	public @NotNull String getUsage(@NotNull ICommandSender sender) {
+	public final @NotNull String getUsage(@NotNull ICommandSender sender) {
 		return usageConsumer.apply(sender);
 	}
 
 	@Override
-	public void execute(@NotNull MinecraftServer server, @NotNull ICommandSender sender, String @NotNull [] args) {
+	public final void execute(@NotNull MinecraftServer server, @NotNull ICommandSender sender, String @NotNull [] args) {
 		try {
 			int result = this.commandDispatcher.execute(getCommandString(args), sender);
 			if (result <= 0) {
@@ -55,15 +55,15 @@ public class BrigadierBase extends CommandBase {
 	}
 
 	@Override
-	public @NotNull List<String> getTabCompletions(@NotNull MinecraftServer server, @NotNull ICommandSender sender, String @NotNull [] args, @Nullable BlockPos targetPos) {
+	public final @NotNull List<String> getTabCompletions(@NotNull MinecraftServer server, @NotNull ICommandSender sender, String @NotNull [] args, @Nullable BlockPos targetPos) {
 		String commandString = getCommandString(args);
 		Suggestions suggestions = this.commandDispatcher.getCompletionSuggestions(this.commandDispatcher.parse(commandString, sender)).join();
 		return suggestions.getList().stream().map(Suggestion::getText).collect(Collectors.toList());
 	}
 
-	//The way they implement execute doesnt allow for brigadier to work with aliases :(.
+	//The way they implement execute doesnt allow for BrigadierBase to work with aliases :(.
 	@Override
-	public @NotNull List<String> getAliases() {
+	public final @NotNull List<String> getAliases() {
 		return Collections.emptyList();
 	}
 
@@ -73,7 +73,7 @@ public class BrigadierBase extends CommandBase {
 			sender.sendMessage(new TextComponentString(ColorCode.RED.getColorCodeString() + "/" + s));
 	}
 
-	public String getCommandString(String[] args) {
+	public final String getCommandString(String[] args) {
 		return String.join(" ", ObjectArrays.concat(this.getName(), args));
 	}
 }
