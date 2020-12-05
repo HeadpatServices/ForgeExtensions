@@ -38,9 +38,9 @@ public class BrigadierBase extends CommandBase {
 	@Override
 	public final @NotNull String getUsage(@NotNull ICommandSender sender) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(ColorCode.RED.getColorCodeString()).append("Usages:").append("\n");
+		builder.append(ColorCode.RED.getColorCodeString()).append("Usages:");
 		for (String s : commandDispatcher.getAllUsage(commandDispatcher.getRoot(), sender, true))
-			builder.append(ColorCode.RED.getColorCodeString()).append("/").append(s).append("\n");
+			builder.append("\n").append(ColorCode.RED.getColorCodeString()).append("/").append(s);
 		return builder.toString();
 	}
 
