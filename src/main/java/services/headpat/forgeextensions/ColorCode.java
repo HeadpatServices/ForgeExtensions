@@ -3,6 +3,9 @@ package services.headpat.forgeextensions;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -106,9 +109,8 @@ public enum ColorCode {
 	private final char code;
 	@Getter
 	private final boolean isFormat;
-	@Getter
-	private final String colorCodeString;
-	private final static Map<Character, ColorCode> BY_CHAR = Maps.newHashMap();
+	private final String toString;
+	private static final Map<Character, ColorCode> BY_CHAR = Maps.newHashMap();
 
 	ColorCode(char code, int intCode) {
 		this(code, intCode, false);
@@ -118,7 +120,7 @@ public enum ColorCode {
 		this.code = code;
 		this.intCode = intCode;
 		this.isFormat = isFormat;
-		this.colorCodeString = new String(new char[]{COLOR_CHAR, code});
+		this.toString = new String(new char[]{COLOR_CHAR, code});
 	}
 
 	public boolean isColor() {
@@ -142,7 +144,9 @@ public enum ColorCode {
 	 * @param input String to strip of color
 	 * @return A copy of the input string, without any coloring
 	 */
-	public static String stripColor(final String input) {
+	@Contract("!null -> !null; null -> null")
+	@Nullable
+	public static String stripColor(@Nullable final String input) {
 		if (input == null) {
 			return null;
 		}
@@ -150,13 +154,18 @@ public enum ColorCode {
 		return STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
 	}
 
+	private static final Pattern HEX_COLOR_PATTERN = Pattern.compile(COLOR_CHAR + "x(?>" + COLOR_CHAR + "[0-9a-f]){6}", Pattern.CASE_INSENSITIVE); // Paper - Support hex colors in getLastColors
+
 	/**
-	 * Gets the ColorCodes used at the end of the given input string.
+	 * Gets the ChatColors used at the end of the given input string.
 	 *
 	 * @param input Input string to retrieve the colors from.
-	 * @return Any remaining ColorCodes to pass onto the next line.
+	 * @return Any remaining ChatColors to pass onto the next line.
 	 */
-	public static String getLastColors(String input) {
+	@NotNull
+	public static String getLastColors(@NotNull String input) {
+		Validate.notNull(input, "Cannot get last colors from null text");
+
 		StringBuilder result = new StringBuilder();
 		int length = input.length();
 
@@ -164,6 +173,15 @@ public enum ColorCode {
 		for (int index = length - 1; index > -1; index--) {
 			char section = input.charAt(index);
 			if (section == COLOR_CHAR && index < length - 1) {
+				// Paper start - Support hex colors
+				if (index > 11 && input.charAt(index - 12) == COLOR_CHAR && (input.charAt(index - 11) == 'x' || input.charAt(index - 11) == 'X')) {
+					String color = input.substring(index - 12, index + 2);
+					if (HEX_COLOR_PATTERN.matcher(color).matches()) {
+						result.insert(0, color);
+						break;
+					}
+				}
+				// Paper end
 				char c = input.charAt(index + 1);
 				ColorCode color = getByChar(c);
 
@@ -179,6 +197,35 @@ public enum ColorCode {
 		}
 
 		return result.toString();
+	}
+
+	/**
+	 * Translates a string using an alternate color code character into a
+	 * string that uses the internal ChatColor.COLOR_CODE color code
+	 * character. The alternate color code character will only be replaced if
+	 * it is immediately followed by 0-9, A-F, a-f, K-O, k-o, R or r.
+	 *
+	 * @param altColorChar    The alternate color code character to replace. Ex: {@literal &}
+	 * @param textToTranslate Text containing the alternate color code character.
+	 * @return Text containing the ChatColor.COLOR_CODE color code character.
+	 */
+	@NotNull
+	public static String translateAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
+		Validate.notNull(textToTranslate, "Cannot translate null text");
+
+		char[] b = textToTranslate.toCharArray();
+		for (int i = 0; i < b.length - 1; i++) {
+			if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[i + 1]) > -1) {
+				b[i] = ColorCode.COLOR_CHAR;
+				b[i + 1] = Character.toLowerCase(b[i + 1]);
+			}
+		}
+		return new String(b);
+	}
+
+	@Override
+	public String toString() {
+		return toString;
 	}
 
 	static {
