@@ -1,11 +1,12 @@
 package services.headpat.forgeextensions.utils;
 
+import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -13,13 +14,14 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@UtilityClass
 public class PlayerUtils {
 	/**
 	 * Quick shortcut. Works on both server and client.
 	 *
 	 * @return returns Server list players.
 	 */
-	@NotNull
+	@NonNull
 	public static PlayerList getPlayerList() {
 		return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
 	}

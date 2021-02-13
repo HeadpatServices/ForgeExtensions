@@ -6,10 +6,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import lombok.NonNull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import services.headpat.forgeextensions.utils.PlayerUtils;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ public class PlayerArgumentType implements ArgumentType<EntityPlayerMP> {
 	 * @return {@link PlayerArgumentType} instance.
 	 */
 	@Contract(value = " -> new", pure = true)
-	public static @NotNull
+	public static @NonNull
 	PlayerArgumentType player() {
 		return new PlayerArgumentType();
 	}
@@ -38,7 +38,7 @@ public class PlayerArgumentType implements ArgumentType<EntityPlayerMP> {
 	 * @param name    Name of the argument.
 	 * @return The player specified by the argument name in the command context.
 	 */
-	public static EntityPlayerMP getPlayer(@NotNull CommandContext<?> context, String name) {
+	public static EntityPlayerMP getPlayer(@NonNull CommandContext<?> context, String name) {
 		return context.getArgument(name, EntityPlayerMP.class);
 	}
 

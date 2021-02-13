@@ -1,10 +1,12 @@
 package services.headpat.forgeextensions.utils;
 
+import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import org.jetbrains.annotations.NotNull;
 import services.headpat.forgeextensions.ColorCode;
 
+@UtilityClass
 public class ChatUtils {
 	/**
 	 * Wraps text that will displayed in a lore to the best of its ability.
@@ -14,7 +16,7 @@ public class ChatUtils {
 	 * @param loreColorCode Color code to make the lore
 	 * @return The text-wrapped lore NBT Tag.
 	 */
-	public static @NotNull NBTTagList wrapLore(@NotNull String lore, int lineLength, ColorCode loreColorCode) {
+	public static @NonNull NBTTagList wrapLore(@NonNull String lore, int lineLength, ColorCode loreColorCode) {
 		String[] words = lore.split(" ");
 
 		NBTTagList nbtLore = new NBTTagList();
@@ -44,7 +46,7 @@ public class ChatUtils {
 	 * @param lore The full length lore with no breaks.
 	 * @return The text-wrapped lore.
 	 */
-	public static @NotNull NBTTagList wrapLore(String lore) {
+	public static @NonNull NBTTagList wrapLore(String lore) {
 		return (ChatUtils.wrapLore(lore, 25, ColorCode.DARK_PURPLE));
 	}
 
@@ -55,7 +57,7 @@ public class ChatUtils {
 	 * @param loreColorCode The color of the lore.
 	 * @return The text-wrapped lore.
 	 */
-	public static @NotNull NBTTagList wrapLore(String lore, ColorCode loreColorCode) {
+	public static @NonNull NBTTagList wrapLore(String lore, ColorCode loreColorCode) {
 		return (ChatUtils.wrapLore(lore, 25, loreColorCode));
 	}
 }

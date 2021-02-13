@@ -1,5 +1,8 @@
 package services.headpat.forgeextensions.utils;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class MiscUtils {
 	/**
 	 * @param chance Integer percentage.
